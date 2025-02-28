@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Tarefas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .task-container {
+            max-width: 500px;
+            margin: auto;
+        }
+        .task {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            padding: 5px;
+            background: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .delete-btn {
+            background: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Minhas Tarefas</h1>
+    
+    <form method="POST" action="{% url 'task-create' %}"> <!-- Corrigido -->
+        {% csrf_token %}
+        <input type="text" name="title" placeholder="Nova tarefa">
+        <button type="submit">Criar</button>
+    </form>
+
+    <div class="task-container">
+        {% for task in tasks %}
+            <div class="task">
+                <form method="POST" action="{% url 'task-update' task.id %}">
+                    {% csrf_token %}
+                    <input type="text" name="title" value="{{ task.title }}" required>
+                    <input type="text" name="description" value="{{ task.description }}" placeholder="Descrição da tarefa">
+                    <label>
+                        <input type="checkbox" name="completed" {% if task.completed %}checked{% endif %}> Concluído
+                    </label>
+                    <button type="submit">Salvar</button>
+                </form>
+                <a href="{% url 'task-delete' task.id %}"><button class="delete-btn">Excluir</button></a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'logout' %}"><button>Sair</button></a>
+</body>
+</html>
+

@@ -1,12 +1,13 @@
 from django.contrib import admin
-from django.urls import path, include
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from django.contrib import admin
 from django.urls import path, include, re_path
+from django.shortcuts import redirect
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from tasks.views import index, task_create, task_update, task_delete, login_view, logout_view, register_view
 
+# Configuração do Swagger
 schema_view = get_schema_view(
     openapi.Info(
         title="To-Do List API",
@@ -21,14 +22,19 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('tasks.urls')),  # Inclui as rotas da API
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("", login_view, name="login"),  # Página inicial agora será a de login
+    path("index/", index, name="task-list"),  # Redirecionar para index.html em vez de task_list.html
+    path("create/", task_create, name="task-create"),
+    path("update/<int:task_id>/", task_update, name="task-update"),
+    path("delete/<int:task_id>/", task_delete, name="task-delete"),
+    path("logout/", logout_view, name="logout"),
+    path("register/", register_view, name="register"),
+    
+    # Redireciona a página inicial para a lista de tarefas
+    path("", lambda request: redirect("/tasks/"), name="index"),
 
     # URLs do Swagger
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
 ]
-
