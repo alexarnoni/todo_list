@@ -75,10 +75,21 @@ def register(request):
             form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-@login_required(login_url="login")  # Garantir que apenas usuários logados acessem
+@login_required(login_url="login")
 def index(request):
-    tasks = Task.objects.filter(user=request.user)  # Apenas tarefas do usuário logado
-    return render(request, "tasks/index.html", {"tasks": tasks})
+    tasks = Task.objects.filter(user=request.user)
+    
+    # Contagem de tarefas
+    total_tasks = tasks.count()
+    pending_tasks = tasks.filter(completed=False).count()
+    completed_tasks = tasks.filter(completed=True).count()
+
+    return render(request, "tasks/index.html", {
+        "tasks": tasks,
+        "total_tasks": total_tasks,
+        "pending_tasks": pending_tasks,
+        "completed_tasks": completed_tasks
+    })
 
 @login_required(login_url="login")
 def task_create(request):
@@ -94,14 +105,18 @@ def task_create(request):
 @login_required(login_url="login")
 def task_update(request, task_id):
     task = get_object_or_404(Task, id=task_id, user=request.user)
-    
+
     if request.method == "POST":
         task.title = request.POST.get("title")
-        task.description = request.POST.get("description", "")  # Permitir descrição vazia
-        task.completed = "completed" in request.POST  # Marca como concluída se o checkbox estiver marcado
+        task.description = request.POST.get("description", "")
+        
+        # Se o usuário clicou no botão "Marcar como Concluído"
+        if "mark_complete" in request.POST:
+            task.completed = not task.completed  # Alterna entre concluído/não concluído
+        
         task.save()
     
-    return redirect("task-list")  # Redireciona de volta para a lista de tarefas
+    return redirect("task-list")
 
 @login_required(login_url="login")
 def task_delete(request, task_id):
