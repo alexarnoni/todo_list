@@ -126,7 +126,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+# Configuração correta para arquivos estáticos
+STATIC_URL = "/static/"
+
+# Diretório correto para coletar arquivos estáticos (usado em produção)
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# Corrigir o erro: Agora o Django buscará a pasta "static" dentro de "tasks/"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "tasks", "static"),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
