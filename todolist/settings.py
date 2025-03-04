@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'tasks',
     'drf_yasg',
+    'django_filters',
+    'rest_framework_simplejwt'
 ]
 
 MIDDLEWARE = [
@@ -149,6 +151,9 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Token expira em 30 minutos
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Novo token precisa ser gerado todo dia
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,  # O token antigo se torna inválido ao atualizar
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }

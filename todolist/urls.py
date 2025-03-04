@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import path, include, re_path
 from django.shortcuts import redirect
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -29,7 +30,12 @@ urlpatterns = [
     path("delete/<int:task_id>/", task_delete, name="task-delete"),
     path("logout/", logout_view, name="logout"),
     path("register/", register_view, name="register"),
-    
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'), 
+   
+   
     # Redireciona a página inicial para a lista de tarefas
     path("", lambda request: redirect("/tasks/"), name="index"),
 
@@ -37,4 +43,8 @@ urlpatterns = [
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    path('admin/', admin.site.urls),  # Habilita o painel de administração do Django
+    path("", include("tasks.urls")),  # Inclui as URLs do app 'tasks'
+
 ]
+

@@ -8,6 +8,23 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
 </head>
 <body>
+    <!-- Container de Notificações -->
+    <div id="notification-container"></div>
+
+    <!-- Captura mensagens Django (escondido para JavaScript processar) -->
+    {% if messages %}
+        <div id="django-messages" style="display: none;">
+            {% for message in messages %}
+                <div class="django-message" data-type="{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Exibir nome do usuário logado -->
+    <div class="user-info">
+        <p>👤 Usuário: {{ request.user.username }}</p>
+    </div>
+
     <h1>📋 Minhas Tarefas</h1>
 
     <!-- Resumo das Tarefas -->
@@ -62,6 +79,9 @@
 
     <!-- Botão de Logout -->
     <a href="{% url 'logout' %}"><button class="logout-btn">🚪 Sair</button></a>
+
+    <!-- Importando o JavaScript para notificações -->
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <script src="{% static 'js/loading.js' %}"></script>
 </body>
 </html>
-
